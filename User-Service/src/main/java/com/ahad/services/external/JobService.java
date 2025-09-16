@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.ahad.dto.imports.JobPostForUserDTO;
 import com.ahad.helper.ApiResponse;
 
-@FeignClient(value = "JOB-SERVICE", url = "http://localhost:8081/api/v1/jobs")
+@FeignClient(value = "JOB-SERVICE")
 public interface JobService {
     @GetMapping("/user/all/{userId}")
     ApiResponse<List<JobPostForUserDTO>> getJobsByUserId(@PathVariable UUID userId);

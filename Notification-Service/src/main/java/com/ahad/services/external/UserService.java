@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
-@FeignClient(name = "USER-SERVICE", url = "http://localhost:8081/api/v1/users")
+@FeignClient(name = "USER-SERVICE")
 public interface UserService {
 
     @GetMapping("/by-heading")

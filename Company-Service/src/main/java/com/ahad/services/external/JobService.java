@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.ahad.dto.imports.JobPostForCompanyDTO;
 import com.ahad.helper.ApiResponse;
 
-@FeignClient(name = "JOB-SERVICE", url = "http://localhost:8081/api/v1/jobs")
+@FeignClient(name = "JOB-SERVICE")
 public interface JobService {
 
     @GetMapping("/user/all/{userId}")
