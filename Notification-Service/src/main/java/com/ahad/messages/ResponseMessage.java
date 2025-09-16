@@ -42,4 +42,5 @@ public class ResponseMessage {
     public static final String SMS_SENT = "SMS notification sent successfully";
     public static final String PUSH_SENT = "Push notification sent successfully";
     public static final String DELIVERY_FAILED = "Notification delivery failed";
+
 }

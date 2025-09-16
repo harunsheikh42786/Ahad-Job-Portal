@@ -63,7 +63,7 @@ public class JobHistoryController {
         }
 
         // ✅ Get All Job Histories
-        @GetMapping("/{userInformationId}")
+        @GetMapping("/user-info/{userInformationId}")
         public ResponseEntity<ApiResponse<List<JobHistoryResponseDTO>>> getAllJobHistories(
                         @PathVariable UUID userInformationId) {
                 List<JobHistoryResponseDTO> jobHistories = jobHistoryService

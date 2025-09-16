@@ -13,7 +13,7 @@ import com.ahad.enums.ExperienceLevel;
 import com.ahad.enums.JobType;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -73,5 +73,5 @@ public class JobPost {
 
     // Job Applications
     @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<JobApplication> applications;
+    private List<JobApplication> applications;
 }

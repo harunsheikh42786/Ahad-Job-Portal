@@ -1,5 +1,6 @@
 package com.ahad.repos;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -14,4 +15,7 @@ public interface JobPostRepository extends JpaRepository<JobPost, UUID> {
 
     Page<JobPost> findByTitleContainingIgnoreCase(String jobTitle, Pageable pageable);
 
+    List<JobPost> findByCompanyId(UUID companyId);
+
+    List<JobPost> findByApplications_ApplicantId(UUID applicantId);
 }

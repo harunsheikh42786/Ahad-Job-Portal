@@ -1,12 +1,10 @@
 package com.ahad.servicesImpl;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -15,22 +13,29 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.ahad.dto.UserSearchDTO;
+import com.ahad.dto.exports.UserForCompanyDTO;
+import com.ahad.dto.exports.UserForJobDTO;
+import com.ahad.dto.imports.JobPostForUserDTO;
 import com.ahad.dto.profile.UserProfileDTO;
 import com.ahad.dto.request.UserRequestDTO;
 import com.ahad.dto.response.UserResponseDTO;
+import com.ahad.dto.response.UserSearchDTO;
 import com.ahad.dto.update.UserUpdateDTO;
-import com.ahad.enums.Gender;
 import com.ahad.enums.SortBy;
 import com.ahad.enums.UserRole;
 import com.ahad.exceptions.DuplicateResourceException;
 import com.ahad.exceptions.MappingFailedException;
 import com.ahad.exceptions.ResourceNotFoundException;
+import com.ahad.helper.ApiResponse;
 import com.ahad.mapper.UserMapper;
 import com.ahad.messages.ResponseMessage;
+import com.ahad.models.JobHistory;
 import com.ahad.models.User;
+import com.ahad.models.UserInformation;
+import com.ahad.repos.JobHistoryRepository;
 import com.ahad.repos.UserRepository;
 import com.ahad.services.UserService;
+import com.ahad.services.external.JobService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +47,8 @@ public class UserServiceImpl implements UserService {
 
         private final UserRepository userRepository;
         private final UserMapper userMapper;
+        private final JobHistoryRepository jobHistoryRepository;
+        private final JobService jobService;
         // private final PasswordEncoder passwordEncoder;
 
         // Register new User
@@ -77,12 +84,17 @@ public class UserServiceImpl implements UserService {
 
         // Get User By Id
         @Override
-        public UserProfileDTO getUserById(String id) {
-                User fetchedUser = userRepository.findById(UUID.fromString(id))
+        public UserProfileDTO getUserProfileById(UUID id) {
+                User fetchedUser = userRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException(
                                                 "User " + ResponseMessage.NOT_FOUND + id));
-                return Optional.ofNullable(userMapper.toProfileDTO(fetchedUser))
+                UserProfileDTO profileDTO = Optional.ofNullable(userMapper.toProfileDTO(fetchedUser))
                                 .orElseThrow(() -> new MappingFailedException(ResponseMessage.MAPPING_FAILED));
+                ApiResponse<List<JobPostForUserDTO>> appliedJobs = jobService.getJobsByUserId(id);
+                if (appliedJobs.isSuccess()) {
+                        profileDTO.getUserInformation().setAppliedJobs(appliedJobs.getData());
+                }
+                return profileDTO;
         }
 
         @Override
@@ -91,9 +103,21 @@ public class UserServiceImpl implements UserService {
                                 .orElseThrow(() -> new ResourceNotFoundException(
                                                 "User " + ResponseMessage.ID_NOT_FOUND));
 
+                // ✅ Agar userInformation null hai to naya banao
+                if (existingUser.getUserInformation() == null) {
+                        existingUser.setUserInformation(new UserInformation());
+                }
+
+                // ✅ DTO -> Entity mapping
                 userMapper.toUserEntity(dto, existingUser);
 
+                // ✅ Relation ensure karo
+                if (existingUser.getUserInformation() != null) {
+                        existingUser.getUserInformation().setUser(existingUser);
+                }
+
                 User savedUser = userRepository.save(existingUser);
+
                 return Optional.ofNullable(userMapper.toResponseDto(savedUser))
                                 .orElseThrow(() -> new MappingFailedException(ResponseMessage.MAPPING_FAILED));
         }
@@ -122,6 +146,32 @@ public class UserServiceImpl implements UserService {
         }
 
         @Override
+        public List<UserForCompanyDTO> getAllUsersByCompanyId(UUID companyId) {
+                List<JobHistory> jobHistories = jobHistoryRepository.findByCompanyIdAndCurrentJobTrue(companyId);
+
+                // Map userId -> JobHistory (current job)
+                Map<UUID, JobHistory> userJobMap = jobHistories.stream()
+                                .collect(Collectors.toMap(
+                                                j -> j.getUserInformation().getUser().getId(),
+                                                j -> j,
+                                                (existing, replacement) -> existing // in case of duplicate user, keep
+                                                                                    // first
+                                ));
+
+                return userJobMap.values().stream()
+                                .map(j -> {
+                                        User u = j.getUserInformation().getUser();
+                                        return new UserForCompanyDTO(
+                                                        u.getId().toString(),
+                                                        u.getFirstName(),
+                                                        u.getLastName(),
+                                                        j.getJobTitle(),
+                                                        j.getStartDate());
+                                })
+                                .collect(Collectors.toList());
+        }
+
+        @Override
         public Page<UserSearchDTO> getAllUsersByRole(UserRole roleType, int pageNumber, int pageSize, String sortBy,
                         String sortDir) {
                 Sort sort = sortDir.equalsIgnoreCase(SortBy.ASCENDING.toString())
@@ -132,7 +182,6 @@ public class UserServiceImpl implements UserService {
 
                 Page<User> users = userRepository.findByRole(roleType, pageable);
 
-                // 👇 MapStruct से DTO में convert करना
                 return users.map(userMapper::toSearchDTO);
         }
 
@@ -148,6 +197,43 @@ public class UserServiceImpl implements UserService {
                 Page<User> users = userRepository.searchByName(name, pageable);
 
                 return users.map(userMapper::toSearchDTO);
+        }
+
+        // Get User For Company By Id
+        @Override
+        public UserForCompanyDTO getUserForCompanyById(UUID id) {
+                User fetchedUser = userRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "User " + ResponseMessage.NOT_FOUND + id));
+                return UserForCompanyDTO.builder()
+                                .id(fetchedUser.getId().toString())
+                                .firstName(fetchedUser.getFirstName())
+                                .lastName(fetchedUser.getLastName())
+                                .position(fetchedUser.getUserInformation().getJobHistories().stream()
+                                                .filter(JobHistory::isCurrentJob)
+                                                .findFirst()
+                                                .map(JobHistory::getJobTitle)
+                                                .orElse(null))
+                                .startDate(fetchedUser.getUserInformation().getJobHistories().stream()
+                                                .filter(JobHistory::isCurrentJob)
+                                                .findFirst()
+                                                .map(JobHistory::getStartDate)
+                                                .orElse(null))
+                                .build();
+        }
+
+        // Get User For Job By Id
+        @Override
+        public UserForJobDTO getUserForJobById(UUID id) {
+                User fetchedUser = userRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "User " + ResponseMessage.NOT_FOUND + id));
+                return UserForJobDTO.builder()
+                                .id(fetchedUser.getId().toString())
+                                .firstName(fetchedUser.getFirstName())
+                                .lastName(fetchedUser.getLastName())
+                                .headline(fetchedUser.getUserInformation().getHeadline())
+                                .build();
         }
 
 }

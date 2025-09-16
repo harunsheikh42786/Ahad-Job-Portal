@@ -1,5 +1,7 @@
 package com.ahad.dto.update;
 
+import com.ahad.enums.JobStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,11 +15,12 @@ public class UserUpdateDTO {
     private String firstName;
     private String lastName;
     private String email;
-    private String headline;
     private String contactNumber;
     private String dob;
     private String gender;
     private String password;
     private String role;
-    private UserInformationUpdateDTO userInformationUpdateDTO;
+    private String headline;
+    private String portfolio;
+    private JobStatus jobStatus;
 }

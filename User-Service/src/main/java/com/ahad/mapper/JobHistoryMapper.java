@@ -1,5 +1,6 @@
 package com.ahad.mapper;
 
+import com.ahad.dto.external.JobHistorySearchDTO;
 import com.ahad.dto.profile.JobHistoryProfileDTO;
 import com.ahad.dto.request.JobHistoryRequestDTO;
 import com.ahad.dto.response.JobHistoryResponseDTO;
@@ -11,6 +12,7 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface JobHistoryMapper {
 
+    @Mapping(target = "companyDTO", ignore = true)
     JobHistoryResponseDTO toDto(JobHistory jobHistory);
 
     @Mapping(target = "id", ignore = true)
@@ -24,5 +26,7 @@ public interface JobHistoryMapper {
     void updateEntityFromDto(JobHistoryUpdateDTO dto, @MappingTarget JobHistory entity);
 
     JobHistoryProfileDTO toProfileDto(JobHistory jobHistory);
+
+    JobHistorySearchDTO toSearchDto(JobHistory jobHistory);
 
 }

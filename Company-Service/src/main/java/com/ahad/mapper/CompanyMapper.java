@@ -6,12 +6,12 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import com.ahad.dto.CompanyProfileDTO;
-import com.ahad.dto.CompanyRequestDTO;
-import com.ahad.dto.CompanyResponseDTO;
-import com.ahad.dto.CompanyUpdateDTO;
+import com.ahad.dto.exports.CompanySearchDTO;
+import com.ahad.dto.profile.CompanyProfileDTO;
+import com.ahad.dto.request.CompanyRequestDTO;
+import com.ahad.dto.response.CompanyResponseDTO;
+import com.ahad.dto.update.CompanyUpdateDTO;
 import com.ahad.models.Company;
-import com.ahad.models.CompanyInformation;
 
 @Mapper(componentModel = "spring")
 public interface CompanyMapper {
@@ -22,34 +22,13 @@ public interface CompanyMapper {
     @Mapping(target = "companyInformation", ignore = true)
     Company maptoCompany(CompanyRequestDTO dto);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "company", ignore = true)
-    @Mapping(target = "description", ignore = true)
-    @Mapping(target = "addresses", ignore = true)
-    @Mapping(target = "headline", ignore = true)
-    @Mapping(target = "websiteLink", ignore = true)
-    CompanyInformation maptoCompanyInformation(CompanyRequestDTO dto);
-
     CompanyResponseDTO mapToCompanyResponseDTO(Company company);
 
-    @Mapping(target = "websiteLink", source = "company.companyInformation.websiteLink")
-    @Mapping(target = "description", source = "company.companyInformation.description")
-    @Mapping(target = "headline", source = "company.companyInformation.headline")
-    @Mapping(target = "registrationId", source = "company.companyInformation.registrationId")
-    @Mapping(target = "registrationDate", source = "company.companyInformation.registrationDate")
-    @Mapping(target = "addresses", source = "company.companyInformation.addresses")
-    @Mapping(target = "jobPosts", ignore = true)
-    @Mapping(target = "employers", ignore = true)
+    // ✅ just map companyInformation → companyInformationDTO
+    @Mapping(target = "companyInformationDTO", source = "company.companyInformation")
+    @Mapping(target = "companyInformationDTO.employers", ignore = true)
+    // @Mapping(target = "companyInformationDTO", ignore = true)
     CompanyProfileDTO mapToProfileDTO(Company company);
-
-    // @Mapping(target = "addresses", ignore = true)
-    // @Mapping(target = "contactNumber", ignore = true)
-    // @Mapping(target = "email", ignore = true)
-    // @Mapping(target = "employers", ignore = true)
-    // @Mapping(target = "jobPosts", ignore = true)
-    // @Mapping(target = "name", ignore = true)
-    // @Mapping(target = "open", ignore = true)
-    // CompanyProfileDTO mapToProfileDTO(CompanyInformation companyInformation);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
@@ -57,4 +36,10 @@ public interface CompanyMapper {
     @Mapping(target = "timeStamp", ignore = true)
     void toEntity(CompanyUpdateDTO dto, @MappingTarget Company company);
 
+    // For Client Service'
+
+    // Assuming companyInformation.addresses is a List and you want the city of the
+    // first address
+    @Mapping(target = "headline", source = "company.companyInformation.headline")
+    CompanySearchDTO mapToCompanySearchDTO(Company company);
 }

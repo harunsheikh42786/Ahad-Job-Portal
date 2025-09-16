@@ -13,6 +13,10 @@ public class NotificationUpdateDTO {
 
     private String title;
 
+    private boolean isCompany;
+
     private String message;
+
+    private boolean isRead;
 
 }

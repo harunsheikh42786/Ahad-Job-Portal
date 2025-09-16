@@ -3,6 +3,7 @@ package com.ahad.dto.profile;
 import java.util.List;
 import java.util.UUID;
 
+import com.ahad.dto.imports.JobPostForUserDTO;
 import com.ahad.enums.JobStatus;
 import lombok.*;
 
@@ -21,4 +22,5 @@ public class UserInformationProfileDTO {
     private List<JobHistoryProfileDTO> jobHistories;
     private List<AchievementProfileDTO> achievements;
     private AddressProfileDTO address;
+    private List<JobPostForUserDTO> appliedJobs;
 }

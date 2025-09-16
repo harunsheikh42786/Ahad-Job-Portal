@@ -6,10 +6,10 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import com.ahad.dto.UserSearchDTO;
 import com.ahad.dto.profile.UserProfileDTO;
 import com.ahad.dto.request.UserRequestDTO;
 import com.ahad.dto.response.UserResponseDTO;
+import com.ahad.dto.response.UserSearchDTO;
 import com.ahad.dto.update.UserUpdateDTO;
 import com.ahad.models.User;
 
@@ -26,6 +26,7 @@ public interface UserMapper {
     @Mapping(target = "active", source = "user.active")
     @Mapping(target = "role", expression = "java(user.getRole() != null ? user.getRole().toString() : null)")
     @Mapping(target = "userInformation", source = "user.userInformation")
+    @Mapping(target = "userInformation.appliedJobs", ignore = true) // To be set in service layer
     UserProfileDTO toProfileDTO(User user);
 
     UserResponseDTO toResponseDto(User user);
@@ -35,14 +36,17 @@ public interface UserMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "timeStamp", ignore = true)
-    @Mapping(target = "userInformation", ignore = true)
+    @Mapping(target = "userInformation.headline", source = "headline")
+    @Mapping(target = "userInformation.portfolio", source = "portfolio")
+    @Mapping(target = "userInformation.jobStatus", source = "jobStatus")
     void toUserEntity(UserUpdateDTO dto, @MappingTarget User entity);
 
     // 👇 Search DTO Mapping
-    @Mapping(target = "id", expression = "java(user.getId().toString())")
-    @Mapping(target = "firstName", source = "user.firstName")
-    @Mapping(target = "lastName", source = "user.lastName")
     @Mapping(target = "headline", source = "user.userInformation.headline")
     UserSearchDTO toSearchDTO(User user);
+
+    // 👇 Search DTO Mapping
+    @Mapping(target = "headline", source = "user.userInformation.headline")
+    UserSearchDTO toSearchDTOExternal(User user);
 
 }

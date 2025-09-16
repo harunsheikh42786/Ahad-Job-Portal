@@ -5,10 +5,12 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 
-import com.ahad.dto.UserSearchDTO;
+import com.ahad.dto.exports.UserForCompanyDTO;
+import com.ahad.dto.exports.UserForJobDTO;
 import com.ahad.dto.profile.UserProfileDTO;
 import com.ahad.dto.request.UserRequestDTO;
 import com.ahad.dto.response.UserResponseDTO;
+import com.ahad.dto.response.UserSearchDTO;
 import com.ahad.dto.update.UserUpdateDTO;
 import com.ahad.enums.UserRole;
 
@@ -18,9 +20,9 @@ public interface UserService {
         UserResponseDTO createUser(UserRequestDTO userRequestDTO);
 
         // Get single user by ID
-        UserProfileDTO getUserById(String id);
+        UserProfileDTO getUserProfileById(UUID id);
 
-        // Update existing user
+        // Update user by ID
         UserResponseDTO updateUser(UUID id, UserUpdateDTO userUpdateDTO);
 
         // Delete user by ID
@@ -36,4 +38,11 @@ public interface UserService {
 
         // Optionally: Get all users without filters
         List<UserProfileDTO> getAllUsers();
+
+        // Client Service Calls
+        List<UserForCompanyDTO> getAllUsersByCompanyId(UUID companyId);
+
+        UserForCompanyDTO getUserForCompanyById(UUID id);
+
+        UserForJobDTO getUserForJobById(UUID id);
 }

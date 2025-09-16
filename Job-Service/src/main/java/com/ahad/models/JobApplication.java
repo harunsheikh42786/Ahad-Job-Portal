@@ -26,11 +26,6 @@ public class JobApplication {
     @Column(nullable = false, updatable = false)
     private UUID id;
 
-    // Candidate (User) who applied
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "candidate_id", nullable = false)
-    // private User candidate;
-
     // Job Post for which application is made
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_post_id", nullable = false)
@@ -49,6 +44,8 @@ public class JobApplication {
     private LocalDateTime appliedAt;
 
     private LocalDateTime updatedAt;
+
+    private UUID applicantId;
 
     @PrePersist
     public void onCreate() {

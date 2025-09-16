@@ -18,5 +18,7 @@ public class NotificationProfileDTO {
 
     private String message;
 
-    private UUID referenceId;
+    private boolean isRead;
+
+    private UUID receiverId;
 }

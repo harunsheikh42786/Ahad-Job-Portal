@@ -2,10 +2,13 @@ package com.ahad.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ahad.dto.request.NotificationRequestDTO;
+import com.ahad.dto.response.NotificationResponseDTO;
+import com.ahad.dto.update.NotificationUpdateDTO;
 import com.ahad.helper.ApiResponse;
+import com.ahad.helper.ApiVersion;
 import com.ahad.messages.ResponseMessage;
-import com.ahad.models.Notification;
-import com.ahad.services.NotificationService;
+import com.ahad.services.internal.NotificationService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,21 +28,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
-@RequestMapping("/notifications") // plural is REST best practice
+@RequestMapping(ApiVersion.V1 + "/notifications") // plural is REST best practice
 @RequiredArgsConstructor // Lombok constructor injection
 public class NotificationController {
 
         private final NotificationService notificationService;
 
         @PostMapping
-        public ResponseEntity<ApiResponse<Notification>> registerNotification(
-                        @Valid @RequestBody Notification notification) {
+        public ResponseEntity<ApiResponse<NotificationResponseDTO>> registerNotification(
+                        @Valid @RequestBody NotificationRequestDTO notificationRequestDTO) {
 
-                Notification createdNotification = notificationService
-                                .createNotification(notification);
+                NotificationResponseDTO createdNotification = notificationService
+                                .createNotification(notificationRequestDTO);
 
-                ApiResponse<Notification> apiResponse = ApiResponse
-                                .<Notification>builder()
+                ApiResponse<NotificationResponseDTO> apiResponse = ApiResponse
+                                .<NotificationResponseDTO>builder()
                                 .success(true)
                                 .message(ResponseMessage.CREATED)
                                 .data(createdNotification)
@@ -52,32 +55,34 @@ public class NotificationController {
                 return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
         }
 
-        @GetMapping("/get/{notificationId}")
-        public ResponseEntity<ApiResponse<List<Notification>>> getNotificationById(
-                        @PathVariable String notificationId) {
-                List<Notification> notifications = notificationService
-                                .getNotificationsByReferenceId(UUID.fromString(notificationId));
+        @GetMapping("/{referenceId}")
+        public ResponseEntity<ApiResponse<List<NotificationResponseDTO>>> getNotificationByReferenceId(
+                        @PathVariable String referenceId) {
+                List<NotificationResponseDTO> notifications = notificationService
+                                .getUnreadNotificationsByReceiverId(UUID.fromString(referenceId));
 
-                ApiResponse<List<Notification>> apiResponse = ApiResponse.<List<Notification>>builder()
+                ApiResponse<List<NotificationResponseDTO>> apiResponse = ApiResponse
+                                .<List<NotificationResponseDTO>>builder()
                                 .success(true)
-                                .message(ResponseMessage.FETCHED)
+                                .message(notifications.isEmpty() ? ResponseMessage.NO_DATA : ResponseMessage.FETCHED)
                                 .data(notifications)
                                 .timestamp(LocalDateTime.now())
                                 .status(HttpStatus.OK.value())
                                 .errorCode(null)
-                                .errorCode(null)
+                                .errorDetails(null)
                                 .build();
                 return ResponseEntity.ok(apiResponse);
         }
 
-        @PutMapping("/{id}")
-        public ResponseEntity<ApiResponse<Notification>> updateNotification(@PathVariable String id,
-                        @RequestBody Notification dto) {
+        @PutMapping("/{notificationId}")
+        public ResponseEntity<ApiResponse<NotificationResponseDTO>> updateNotification(
+                        @PathVariable String notificationId,
+                        @RequestBody NotificationUpdateDTO dto) {
 
-                Notification updatedNotification = notificationService
-                                .updateNotification(UUID.fromString(id), dto);
+                NotificationResponseDTO updatedNotification = notificationService
+                                .updateNotification(UUID.fromString(notificationId), dto);
 
-                ApiResponse<Notification> response = ApiResponse.<Notification>builder()
+                ApiResponse<NotificationResponseDTO> response = ApiResponse.<NotificationResponseDTO>builder()
                                 .success(true)
                                 .message(ResponseMessage.UPDATED)
                                 .data(updatedNotification)

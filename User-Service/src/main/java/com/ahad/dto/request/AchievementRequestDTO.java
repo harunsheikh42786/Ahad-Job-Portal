@@ -22,4 +22,7 @@ public class AchievementRequestDTO {
 
     @NotNull(message = "Achievement type is required")
     private AchievementType type;
+
+    @NotNull(message = "UserInformation ID is required")
+    private String userInformationId; // <-- sirf ID bhejna, poora entity nahi
 }

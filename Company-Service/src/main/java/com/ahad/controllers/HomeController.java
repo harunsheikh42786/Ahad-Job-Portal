@@ -10,16 +10,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ahad.dto.CompanyRequestDTO;
-import com.ahad.dto.CompanyResponseDTO;
+import com.ahad.dto.request.CompanyRequestDTO;
+import com.ahad.dto.response.CompanyResponseDTO;
 import com.ahad.helper.ApiResponse;
+import com.ahad.helper.ApiVersion;
 import com.ahad.messages.ResponseMessage;
-import com.ahad.services.CompanyService;
+import com.ahad.services.internal.CompanyService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/companies")
+@RequestMapping(ApiVersion.V1 + "/companies")
 public class HomeController {
 
     @Autowired

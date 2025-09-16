@@ -11,8 +11,8 @@ import com.ahad.models.Company;
 
 public interface CompanyRepository extends JpaRepository<Company, UUID> {
 
-    @EntityGraph(attributePaths = { "companyInformation", "addresses" })
-    Optional<Company> findById(UUID id);
+    // @EntityGraph(attributePaths = { "companyInformation"})
+    // Optional<Company> findById(UUID id);
 
     boolean existsByEmail(String email);
 

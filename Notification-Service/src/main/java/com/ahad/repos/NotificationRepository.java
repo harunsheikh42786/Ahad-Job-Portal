@@ -10,6 +10,9 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, UUID> {
 
-    List<Notification> findByReferenceId(UUID referenceId);
+    // User ke liye, including broadcast notifications
+    List<Notification> findByReceiverIdOrIsBroadcastTrueOrderByCreatedAtDesc(UUID receiverId);
 
+    // Agar sirf unread notifications chahiye
+    List<Notification> findByReceiverIdAndIsReadFalseOrIsBroadcastTrueOrderByCreatedAtDesc(UUID receiverId);
 }

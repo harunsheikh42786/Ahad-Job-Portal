@@ -42,5 +42,6 @@ public interface UserInformationMapper {
     @Mapping(target = "address", source = "entity.address")
     @Mapping(target = "jobHistories", source = "entity.jobHistories")
     @Mapping(target = "educations", source = "entity.educations")
+    @Mapping(target = "appliedJobs", ignore = true) // To be set in service layer
     UserInformationProfileDTO toDTO(UserInformation entity);
 }

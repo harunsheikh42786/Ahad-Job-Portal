@@ -8,11 +8,14 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import com.ahad.dto.JobPostProfileDTO;
-import com.ahad.dto.JobPostRequestDTO;
-import com.ahad.dto.JobPostResponseDTO;
-import com.ahad.dto.JobPostSearchDTO;
-import com.ahad.dto.JobPostUpdateDTO;
+import com.ahad.dto.exports.JobPostForCompanyDTO;
+import com.ahad.dto.exports.JobPostForUserDTO;
+import com.ahad.dto.posts.JobPostProfileDTO;
+import com.ahad.dto.posts.JobPostRequestDTO;
+import com.ahad.dto.posts.JobPostResponseDTO;
+import com.ahad.dto.posts.JobPostSearchDTO;
+import com.ahad.dto.posts.JobPostUpdateDTO;
+import com.ahad.events.JobPostedEvent;
 import com.ahad.models.JobPost;
 
 @Mapper(componentModel = "spring")
@@ -35,13 +38,23 @@ public interface JobMapper {
     @Mapping(target = "recruiterId", ignore = true)
     void toEntity(JobPostUpdateDTO dto, @MappingTarget JobPost entity);
 
+    @Mapping(target = "company", ignore = true)
+    @Mapping(target = "recruiter", ignore = true)
     JobPostProfileDTO mapToProfileDTO(JobPost jobPost);
 
     @Mapping(target = "companyName", ignore = true)
     JobPostSearchDTO mapToSearchDTO(JobPost jobPost);
 
+    @Mapping(target = "applications", ignore = true)
+    JobPostForCompanyDTO mapToJobPostForCompanyDTO(JobPost jobPost);
+
+    @Mapping(target = "company", ignore = true)
+    @Mapping(target = "application", ignore = true)
+    JobPostForUserDTO mapToJobPostForUserDTO(JobPost jobPost);
+
+    JobPostedEvent mapToJobEventForKafkaDTO(JobPost jobPost);
+
     List<JobPostSearchDTO> mapToSearchDTOs(List<JobPost> jobPost);
 
     List<JobPostResponseDTO> mapToResponseDTOs(List<JobPost> jobPosts);
-
 }

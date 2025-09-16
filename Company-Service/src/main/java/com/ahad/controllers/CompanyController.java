@@ -2,12 +2,14 @@ package com.ahad.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ahad.dto.CompanyProfileDTO;
-import com.ahad.dto.CompanyResponseDTO;
-import com.ahad.dto.CompanyUpdateDTO;
+import com.ahad.dto.exports.CompanySearchDTO;
+import com.ahad.dto.profile.CompanyProfileDTO;
+import com.ahad.dto.response.CompanyResponseDTO;
+import com.ahad.dto.update.CompanyUpdateDTO;
 import com.ahad.helper.ApiResponse;
+import com.ahad.helper.ApiVersion;
 import com.ahad.messages.ResponseMessage;
-import com.ahad.services.CompanyService;
+import com.ahad.services.internal.CompanyService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
-@RequestMapping("/companies") // plural is REST best practice
+@RequestMapping(ApiVersion.V1 + "/companies") // plural is REST best practice
 @RequiredArgsConstructor // Lombok constructor injection
 public class CompanyController {
 
@@ -35,10 +37,32 @@ public class CompanyController {
         public ResponseEntity<ApiResponse<CompanyProfileDTO>> getCompanyById(@PathVariable String companyId) {
                 CompanyProfileDTO companyProfileDTO = companyService.getCompanyById(companyId);
 
+                // CompanyResponseDTO companyProfileDTO = CompanyResponseDTO.builder()
+                // .id(UUID.fromString(companyId))
+                // .name("Example Company")
+                // .email("info@example.com")
+                // .build();
+
                 ApiResponse<CompanyProfileDTO> apiResponse = ApiResponse.<CompanyProfileDTO>builder()
                                 .success(true)
                                 .message(ResponseMessage.FETCHED)
                                 .data(companyProfileDTO)
+                                .timestamp(LocalDateTime.now())
+                                .status(HttpStatus.OK.value())
+                                .errorCode(null)
+                                .errorCode(null)
+                                .build();
+                return ResponseEntity.ok(apiResponse);
+        }
+
+        @GetMapping("/client/{companyId}")
+        public ResponseEntity<ApiResponse<CompanySearchDTO>> getCompanyByIdForClient(@PathVariable String companyId) {
+                CompanySearchDTO companySearchDTO = companyService.getCompanyByIdForClient(companyId);
+
+                ApiResponse<CompanySearchDTO> apiResponse = ApiResponse.<CompanySearchDTO>builder()
+                                .success(true)
+                                .message(ResponseMessage.FETCHED)
+                                .data(companySearchDTO)
                                 .timestamp(LocalDateTime.now())
                                 .status(HttpStatus.OK.value())
                                 .errorCode(null)

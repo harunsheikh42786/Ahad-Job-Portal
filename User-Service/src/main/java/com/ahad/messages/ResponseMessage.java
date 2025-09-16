@@ -9,7 +9,7 @@ public class ResponseMessage {
     public static final String DELETED = "deleted successfully";
     public static final String FAILED = "Operation failed";
     public static final String NOT_FOUND = "not found";
-    public static final String NO_DATA = "No data available";
+    public static final String NO_DATA = "No data available for ";
 
     // 🔹 Resource Errors
     public static final String RESOURCE_NOT_FOUND = "Requested resource not found";
