@@ -20,13 +20,13 @@ import com.ahad.services.internal.CompanyService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping(ApiVersion.V1 + "/companies")
+@RequestMapping(ApiVersion.V1 + "/register")
 public class HomeController {
 
     @Autowired
     private CompanyService companyService;
 
-    @PostMapping
+    @PostMapping("/company")
     public ResponseEntity<ApiResponse<CompanyResponseDTO>> registerCompany(
             @Valid @RequestBody CompanyRequestDTO companyRequestDTO) {
         CompanyResponseDTO createdCompany = companyService.createCompany(companyRequestDTO);

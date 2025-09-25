@@ -12,7 +12,7 @@ import com.ahad.helper.ApiResponse;
 
 @FeignClient(value = "JOB-SERVICE")
 public interface JobService {
-    @GetMapping("/user/all/{userId}")
+    @GetMapping("/api/v1/jobs/user/all/{userId}")
     ApiResponse<List<JobPostForUserDTO>> getJobsByUserId(@PathVariable UUID userId);
 
 }

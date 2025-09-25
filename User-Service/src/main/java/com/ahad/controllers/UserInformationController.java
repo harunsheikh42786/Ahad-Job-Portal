@@ -6,7 +6,8 @@ import com.ahad.dto.update.UserInformationUpdateDTO;
 import com.ahad.helper.ApiResponse;
 import com.ahad.helper.ApiVersion;
 import com.ahad.messages.ResponseMessage;
-import com.ahad.services.UserInformationService;
+import com.ahad.services.internal.UserInformationService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

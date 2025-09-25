@@ -10,8 +10,10 @@ import com.ahad.enums.UserRole;
 import com.ahad.helper.ApiResponse;
 import com.ahad.helper.ApiVersion;
 import com.ahad.messages.ResponseMessage;
-import com.ahad.services.UserService;
+import com.ahad.services.internal.UserService;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -29,6 +31,31 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
         private final UserService userService;
+
+        // ✅ Get user by ID
+        @GetMapping("/verify")
+        public ResponseEntity<ApiResponse<Boolean>> verifyUser(
+                        @RequestParam @Email String email,
+                        @RequestParam @NotBlank String password) {
+
+                boolean isVerified = userService.verifyUser(email, password);
+
+                HttpStatus status = isVerified ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
+                String message = isVerified ? "User " + ResponseMessage.SUCCESS_VERIFICATION
+                                : ResponseMessage.FAILED_VERIFICATION;
+
+                ApiResponse<Boolean> apiResponse = ApiResponse.<Boolean>builder()
+                                .success(isVerified)
+                                .message(message)
+                                .data(isVerified)
+                                .timestamp(LocalDateTime.now())
+                                .status(status.value())
+                                .errorCode(isVerified ? null : ResponseMessage.NOT_FOUND)
+                                .errorDetails(isVerified ? null : message)
+                                .build();
+
+                return ResponseEntity.status(status).body(apiResponse);
+        }
 
         // ✅ Get user by ID
         @GetMapping("/profile/{id}")

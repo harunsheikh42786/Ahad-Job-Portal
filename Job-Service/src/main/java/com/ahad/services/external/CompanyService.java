@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.ahad.dto.imports.CompanyForJobDTO;
 import com.ahad.helper.ApiResponse;
+import com.ahad.helper.ApiVersion;
 
 // @FeignClient(name = "COMPANY-SERVICE", url = "http://localhost:8082/api/v1/companies") // If there is no eureka server
 @FeignClient(name = "COMPANY-SERVICE")
 public interface CompanyService {
-    @GetMapping("/client/{id}")
+    @GetMapping(ApiVersion.V1 + "/companies/client/{id}")
     ApiResponse<CompanyForJobDTO> getCompanyByIdForJob(@PathVariable UUID id);
 }

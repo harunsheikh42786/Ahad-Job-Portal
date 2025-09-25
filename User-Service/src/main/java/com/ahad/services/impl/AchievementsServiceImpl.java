@@ -1,4 +1,4 @@
-package com.ahad.servicesImpl;
+package com.ahad.services.impl;
 
 import com.ahad.dto.request.AchievementRequestDTO;
 import com.ahad.dto.response.AchievementResponseDTO;
@@ -10,7 +10,8 @@ import com.ahad.models.Achievement;
 import com.ahad.models.UserInformation;
 import com.ahad.repos.AchievementRepository;
 import com.ahad.repos.UserInformationRepository;
-import com.ahad.services.AchievementService;
+import com.ahad.services.internal.AchievementService;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,5 @@
 package com.ahad.repos;
 
-import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +11,8 @@ import com.ahad.enums.UserRole;
 import com.ahad.models.User;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
+
+    User findByEmail(String email);
 
     boolean existsByEmail(String email);
 

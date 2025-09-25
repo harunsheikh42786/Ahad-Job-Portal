@@ -1,4 +1,4 @@
-package com.ahad.servicesImpl;
+package com.ahad.services.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ahad.dto.exports.UserForCompanyDTO;
@@ -34,8 +35,8 @@ import com.ahad.models.User;
 import com.ahad.models.UserInformation;
 import com.ahad.repos.JobHistoryRepository;
 import com.ahad.repos.UserRepository;
-import com.ahad.services.UserService;
 import com.ahad.services.external.JobService;
+import com.ahad.services.internal.UserService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,17 @@ public class UserServiceImpl implements UserService {
         private final UserMapper userMapper;
         private final JobHistoryRepository jobHistoryRepository;
         private final JobService jobService;
-        // private final PasswordEncoder passwordEncoder;
+        private final PasswordEncoder passwordEncoder;
+
+        @Override
+        public boolean verifyUser(String username, String password) {
+                if (userRepository.existsByEmail(username)) {
+                        User existingUser = userRepository.findByEmail(username); // ✅ Find by username/email
+                        return passwordEncoder.matches(password, existingUser.getPassword()); // ✅ Correct password
+                                                                                              // verification
+                }
+                return false;
+        }
 
         // Register new User
         @Override
@@ -72,6 +83,7 @@ public class UserServiceImpl implements UserService {
                 // UserResponseDTO response = mapper.map(user, UserResponseDTO.class);
 
                 // Save to DB
+                user.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
                 user.setActive(true);
                 user.setTimeStamp(LocalDateTime.now());
                 user.setRole(user.getRole() == null ? UserRole.JOB_SEEKER : user.getRole());
@@ -114,6 +126,10 @@ public class UserServiceImpl implements UserService {
                 // ✅ Relation ensure karo
                 if (existingUser.getUserInformation() != null) {
                         existingUser.getUserInformation().setUser(existingUser);
+                }
+
+                if (!dto.getPassword().isEmpty()) {
+                        existingUser.setPassword(passwordEncoder.encode(dto.getPassword()));
                 }
 
                 User savedUser = userRepository.save(existingUser);

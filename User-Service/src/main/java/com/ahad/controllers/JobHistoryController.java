@@ -6,7 +6,8 @@ import com.ahad.dto.update.JobHistoryUpdateDTO;
 import com.ahad.helper.ApiResponse;
 import com.ahad.helper.ApiVersion;
 import com.ahad.messages.ResponseMessage;
-import com.ahad.services.JobHistoryService;
+import com.ahad.services.internal.JobHistoryService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -6,7 +6,8 @@ import com.ahad.dto.update.AddressUpdateDTO;
 import com.ahad.helper.ApiResponse;
 import com.ahad.helper.ApiVersion;
 import com.ahad.messages.ResponseMessage;
-import com.ahad.services.AddressService;
+import com.ahad.services.internal.AddressService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

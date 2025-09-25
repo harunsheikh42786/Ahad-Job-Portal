@@ -1,11 +1,13 @@
 package com.ahad.services.impl;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ahad.dto.exports.CompanySearchDTO;
@@ -39,8 +41,18 @@ public class CompanyServiceImpl implements CompanyService {
         private final CompanyMapper companyMapper;
         private final UserService userService;
         private final JobService jobService;
+        private PasswordEncoder passwordEncoder;
 
         // Register new Company
+        @Override
+        public boolean verifyCompany(String username, String password) {
+                if (companyRepository.existsByEmail(username)) {
+                        Company existingCompany = companyRepository.findByEmail(username);
+                        return passwordEncoder.matches(password, existingCompany.getPassword());
+                }
+                return false;
+        }
+
         @Override
         public CompanyResponseDTO createCompany(CompanyRequestDTO companyRequestDTO) {
                 if (companyRepository.existsByEmail(companyRequestDTO.getEmail())) {
@@ -80,20 +92,32 @@ public class CompanyServiceImpl implements CompanyService {
                 // 2️⃣ Map to DTO
                 CompanyProfileDTO companyProfileDTO = companyMapper.mapToProfileDTO(fetchedCompany);
 
-                // 3️⃣ Fetch users via Feign client
-                ApiResponse<List<UserSearchForCompanyhDTO>> apiResponse = userService
-                                .getUsersByCompanyId(UUID.fromString(id));
-
-                // 4️⃣ Attach employers list to DTO
-                if (apiResponse.isSuccess()) {
-                        companyProfileDTO.getCompanyInformationDTO().setEmployers(apiResponse.getData());
+                // Try to fetch users
+                try {
+                        ApiResponse<List<UserSearchForCompanyhDTO>> apiResponse = userService
+                                        .getUsersByCompanyId(UUID.fromString(id));
+                        if (apiResponse.isSuccess()) {
+                                companyProfileDTO.getCompanyInformationDTO().setEmployers(apiResponse.getData());
+                        } else {
+                                companyProfileDTO.getCompanyInformationDTO().setEmployers(Collections.emptyList());
+                        }
+                } catch (Exception e) {
+                        // Agar UserService down hai
+                        companyProfileDTO.getCompanyInformationDTO().setEmployers(Collections.emptyList());
                 }
-                // 5️⃣ Fetch jobs via Feign client
-                ApiResponse<List<JobPostForCompanyDTO>> jobApiResponse = jobService
-                                .getJobsByCompanyId(UUID.fromString(id));
 
-                if (jobApiResponse.isSuccess()) {
-                        companyProfileDTO.getCompanyInformationDTO().setJobPosts(jobApiResponse.getData());
+                // Try to fetch jobs
+                try {
+                        ApiResponse<List<JobPostForCompanyDTO>> jobApiResponse = jobService
+                                        .getJobsByCompanyId(UUID.fromString(id));
+                        if (jobApiResponse.isSuccess()) {
+                                companyProfileDTO.getCompanyInformationDTO().setJobPosts(jobApiResponse.getData());
+                        } else {
+                                companyProfileDTO.getCompanyInformationDTO().setJobPosts(Collections.emptyList());
+                        }
+                } catch (Exception e) {
+                        // Agar JobService down hai
+                        companyProfileDTO.getCompanyInformationDTO().setJobPosts(Collections.emptyList());
                 }
 
                 return companyProfileDTO;

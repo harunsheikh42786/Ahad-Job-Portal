@@ -6,7 +6,7 @@ import com.ahad.dto.response.EducationResponseDTO;
 import com.ahad.helper.ApiResponse;
 import com.ahad.helper.ApiVersion;
 import com.ahad.messages.ResponseMessage;
-import com.ahad.services.EducationService;
+import com.ahad.services.internal.EducationService;
 
 import lombok.RequiredArgsConstructor;
 

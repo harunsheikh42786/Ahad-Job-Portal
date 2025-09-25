@@ -15,18 +15,18 @@ import com.ahad.dto.response.UserResponseDTO;
 import com.ahad.helper.ApiResponse;
 import com.ahad.helper.ApiVersion;
 import com.ahad.messages.ResponseMessage;
-import com.ahad.services.UserService;
+import com.ahad.services.internal.UserService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping(ApiVersion.V1 + "/users")
+@RequestMapping(ApiVersion.V1 + "/register")
 public class HomeController {
 
         @Autowired
         private UserService userService;
 
-        @PostMapping("/register")
+        @PostMapping("/user")
         public ResponseEntity<ApiResponse<UserResponseDTO>> registerUser(
                         @Valid @RequestBody UserRequestDTO userRequestDTO) {
                 UserResponseDTO createdUser = userService.createUser(userRequestDTO);

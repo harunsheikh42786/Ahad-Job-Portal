@@ -11,6 +11,8 @@ import com.ahad.helper.ApiVersion;
 import com.ahad.messages.ResponseMessage;
 import com.ahad.services.internal.CompanyService;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping(ApiVersion.V1 + "/companies") // plural is REST best practice
@@ -32,6 +35,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class CompanyController {
 
         private final CompanyService companyService;
+
+        @GetMapping("/verify")
+        public ResponseEntity<ApiResponse<Boolean>> verifyUser(
+                        @RequestParam @Email String email,
+                        @RequestParam @NotBlank String password) {
+
+                boolean isVerified = companyService.verifyCompany(email, password);
+
+                HttpStatus status = isVerified ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
+                String message = isVerified ? "Company " + ResponseMessage.SUCCESS_VERIFICATION
+                                : ResponseMessage.FAILED_VERIFICATION;
+
+                ApiResponse<Boolean> apiResponse = ApiResponse.<Boolean>builder()
+                                .success(isVerified)
+                                .message(message)
+                                .data(isVerified)
+                                .timestamp(LocalDateTime.now())
+                                .status(status.value())
+                                .errorCode(isVerified ? null : ResponseMessage.NOT_FOUND)
+                                .errorDetails(isVerified ? null : message)
+                                .build();
+
+                return ResponseEntity.status(status).body(apiResponse);
+        }
 
         @GetMapping("/{companyId}")
         public ResponseEntity<ApiResponse<CompanyProfileDTO>> getCompanyById(@PathVariable String companyId) {

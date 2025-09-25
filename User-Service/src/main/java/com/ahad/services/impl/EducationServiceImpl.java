@@ -1,4 +1,4 @@
-package com.ahad.servicesImpl;
+package com.ahad.services.impl;
 
 import com.ahad.dto.request.EducationRequestDTO;
 import com.ahad.dto.update.EducationUpdateDTO;
@@ -9,7 +9,7 @@ import com.ahad.models.Education;
 import com.ahad.models.UserInformation;
 import com.ahad.repos.EducationRepository;
 import com.ahad.repos.UserInformationRepository;
-import com.ahad.services.EducationService;
+import com.ahad.services.internal.EducationService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

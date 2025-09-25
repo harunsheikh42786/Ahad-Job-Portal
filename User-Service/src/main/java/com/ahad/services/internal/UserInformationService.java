@@ -1,4 +1,4 @@
-package com.ahad.services;
+package com.ahad.services.internal;
 
 import com.ahad.dto.request.UserInformationRequestDTO;
 import com.ahad.dto.response.UserInformationResponseDTO;

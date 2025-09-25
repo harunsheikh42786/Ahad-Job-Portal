@@ -2,6 +2,8 @@ package com.ahad.messages;
 
 public class ResponseMessage {
 
+    public static final String SUCCESS_VERIFICATION = "verification is success";
+    public static final String FAILED_VERIFICATION = "Invalid email or password";
     // 🔹 Common
     public static final String CREATED = "created successfully";
     public static final String UPDATED = "updated successfully";

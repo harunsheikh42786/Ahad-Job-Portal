@@ -1,4 +1,4 @@
-package com.ahad.services;
+package com.ahad.services.internal;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,6 +15,8 @@ import com.ahad.dto.update.UserUpdateDTO;
 import com.ahad.enums.UserRole;
 
 public interface UserService {
+
+        boolean verifyUser(String username, String password);
 
         // Create a new user
         UserResponseDTO createUser(UserRequestDTO userRequestDTO);

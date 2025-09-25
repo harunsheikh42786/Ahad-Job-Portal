@@ -1,4 +1,4 @@
-package com.ahad.services;
+package com.ahad.services.internal;
 
 import java.util.List;
 import java.util.UUID;

@@ -11,6 +11,8 @@ import com.ahad.dto.update.CompanyUpdateDTO;
 
 public interface CompanyService {
 
+        boolean verifyCompany(String username, String password);
+
         // Create a new company
         CompanyResponseDTO createCompany(CompanyRequestDTO companyRequestDTO);
 

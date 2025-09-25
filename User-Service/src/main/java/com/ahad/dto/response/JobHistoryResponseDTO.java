@@ -18,4 +18,5 @@ public class JobHistoryResponseDTO {
     private LocalDate endDate;
     private boolean currentJob;
     private CompanySearchDTO companyDTO;
+    private String error;
 }

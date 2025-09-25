@@ -1,4 +1,4 @@
-package com.ahad.services;
+package com.ahad.services.internal;
 
 import com.ahad.dto.request.EducationRequestDTO;
 import com.ahad.dto.update.EducationUpdateDTO;

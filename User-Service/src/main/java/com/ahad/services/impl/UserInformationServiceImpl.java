@@ -1,4 +1,4 @@
-package com.ahad.servicesImpl;
+package com.ahad.services.impl;
 
 import com.ahad.dto.request.UserInformationRequestDTO;
 import com.ahad.dto.response.UserInformationResponseDTO;
@@ -10,7 +10,8 @@ import com.ahad.models.User;
 import com.ahad.models.UserInformation;
 import com.ahad.repos.UserInformationRepository;
 import com.ahad.repos.UserRepository;
-import com.ahad.services.UserInformationService;
+import com.ahad.services.internal.UserInformationService;
+
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

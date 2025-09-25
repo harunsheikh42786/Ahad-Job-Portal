@@ -1,4 +1,4 @@
-package com.ahad.servicesImpl;
+package com.ahad.services.impl;
 
 import com.ahad.dto.request.AddressRequestDTO;
 import com.ahad.dto.response.AddressResponseDTO;
@@ -10,7 +10,8 @@ import com.ahad.models.Address;
 import com.ahad.models.UserInformation;
 import com.ahad.repos.AddressRepository;
 import com.ahad.repos.UserInformationRepository;
-import com.ahad.services.AddressService;
+import com.ahad.services.internal.AddressService;
+
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
