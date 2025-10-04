@@ -1,18 +1,19 @@
-Here’s a **professional, well-structured README** for your **Ahad Job Portal** project:
+Perfect ✅ Harun!
+Here’s your **fully updated, professional GitHub-ready README** for **Ahad Job Portal**, including your new **API Gateway configuration**, concise explanations, and clear structure — all formatted for maximum clarity and recruiter appeal 👇
 
 ---
 
 # 🧑‍💼 Ahad Job Portal
 
-A **microservices-based Job Portal Application** built with **Spring Boot**, providing secure, scalable, and event-driven architecture.
-It connects **Users** and **Companies**, enabling job creation, application, and real-time notifications — all managed through **Spring Cloud**, **Kafka**, and **JWT Authentication**.
+A **microservices-based Job Portal Application** built with **Spring Boot**, providing a **secure**, **scalable**, and **event-driven architecture**.
+It connects **Users** and **Companies**, enabling job creation, applications, and real-time notifications — all managed through **Spring Cloud**, **Kafka**, and **JWT Authentication**.
 
 ---
 
 ## 🚀 Overview
 
-**Ahad Job Portal** is designed using a **microservices architecture**, where each module (User, Company, Job, Notification, Auth, etc.) operates independently and communicates through **Apache Kafka**.
-It supports **JWT-based Authentication** for secure access and **Spring Cloud Gateway** for API routing and filtering.
+**Ahad Job Portal** is designed using a **microservices architecture**, where each service (User, Company, Job, Notification, Auth, etc.) operates independently and communicates via **Apache Kafka**.
+It ensures secure access using **JWT Authentication**, centralized configuration through **Spring Cloud Config**, and intelligent routing using **Spring Cloud Gateway**.
 
 ---
 
@@ -20,50 +21,49 @@ It supports **JWT-based Authentication** for secure access and **Spring Cloud Ga
 
 ### 1. **User-Service**
 
-* Handles user registration, update, and profile management.
+* Handles user registration, updates, and profile management.
 * Manages job applications submitted by users.
-* Exposes REST APIs for retrieving user details.
+* Exposes REST APIs for retrieving and updating user details.
 
 ### 2. **Company-Service**
 
-* Manages company registration, updates, and profile data.
-* Allows companies to post new jobs and view applicants.
+* Manages company registration and profile updates.
+* Enables companies to post jobs and view applicants.
 
 ### 3. **Job-Service**
 
-* Handles job creation, retrieval, and management.
-* Connects companies and users through job postings and applications.
-* Triggers events to **Notification-Service** upon new job postings or application updates.
+* Handles job creation, updates, and applications.
+* Connects companies and users through job postings.
+* Publishes Kafka events for new jobs and status changes.
 
 ### 4. **Notification-Service**
 
-* Listens to Kafka topics to receive real-time events.
+* Listens to Kafka topics for job events and application updates.
 * Sends notifications when:
 
   * A new job is posted.
-  * A user's application status changes.
+  * A user’s application status changes.
 
 ### 5. **Auth-Service**
 
-* Responsible for login and JWT token generation.
-* Validates tokens for secured endpoints across microservices.
-* Supports role-based access control (e.g., USER, COMPANY).
+* Manages login and JWT token generation.
+* Validates tokens for secured endpoints across all services.
+* Supports role-based access (`USER`, `COMPANY`).
 
 ### 6. **API Gateway**
 
 * Routes incoming requests to appropriate microservices.
-* Validates JWT tokens before forwarding.
-* Central entry point for all client interactions.
+* Performs **JWT validation** for protected routes.
+* Single entry point for all external API requests.
 
 ### 7. **Eureka Server**
 
-* Service discovery and registration.
-* Helps all microservices locate and communicate with each other dynamically.
+* Handles service discovery and registration dynamically.
 
 ### 8. **Config Server**
 
-* Centralized configuration management using Spring Cloud Config.
-* Loads configuration files from GitHub Repository:
+* Manages centralized configurations using **Spring Cloud Config**.
+* Loads properties from GitHub Config Repository:
   🔗 [Ahad Job Configs](https://github.com/harunsheikh42786/Ahad-Job-Configs.git)
 
 ---
@@ -84,33 +84,86 @@ It supports **JWT-based Authentication** for secure access and **Spring Cloud Ga
 
 ---
 
+## 🌐 API Gateway Routing Configuration
+
+The **API Gateway** (running on port `8080`) handles all routing and security.
+Routes are categorized as **Public** (no JWT required) or **Protected** (JWT required).
+
+| Access Type      | Service                  | Routes                                                                                                                   | Description                                                       |
+| ---------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
+| 🟢 **Public**    | **User-Service**         | `/api/v1/register/user`                                                                                                  | Register a new user                                               |
+| 🟢 **Public**    | **Company-Service**      | `/api/v1/register/company`                                                                                               | Register a new company                                            |
+| 🟢 **Public**    | **Auth-Service**         | `/api/v1/auth/**`, `/authenticate`                                                                                       | Login and generate JWT                                            |
+| 🔒 **Protected** | **User-Service**         | `/api/v1/users/**`, `/api/v1/user-info/**`, `/api/v1/educations/**`, `/api/v1/achievements/**`, `/api/v1/job-history/**` | Manage user details and applications                              |
+| 🔒 **Protected** | **Company-Service**      | `/api/v1/companies/**`, `/api/v1/company-information/**`, `/api/v1/company-addresses/**`                                 | Manage company profile and details                                |
+| 🟡 **Mixed**     | **Job-Service**          | `/api/v1/jobs/**`, `/api/v1/applications/**`, `/api/v1/categories/**`                                                    | Public GET for listings, Protected POST/PUT/DELETE for management |
+| 🔒 **Protected** | **Notification-Service** | `/api/v1/notifications/**`, `/api/v1/emails/**`, `/api/v1/alerts/**`                                                     | Manage notifications and alerts                                   |
+
+---
+
+### 🔐 JWT Configuration
+
+```yaml
+jwt:
+  secret: "mysecretkey123456789012345678901234"
+```
+
+**Header Example:**
+
+```http
+Authorization: Bearer <your_jwt_token>
+```
+
+---
+
+### 🩺 Management Endpoints
+
+| Endpoint            | Description              |
+| ------------------- | ------------------------ |
+| `/actuator/health`  | Check application health |
+| `/actuator/info`    | Display app information  |
+| `/actuator/metrics` | View runtime performance |
+
+---
+
+### 🧾 Logging Configuration
+
+```yaml
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    com.ahad.gateway.filter: DEBUG
+```
+
+---
+
 ## 🔐 Authentication Flow
 
-1. User or Company registers through respective services.
-2. Login credentials are verified by **Auth-Service**.
-3. A **JWT Token** is generated and returned.
-4. Every request passes through the **API Gateway**, which validates the JWT token.
-5. Role-based access (USER or COMPANY) determines available actions.
+1. **User/Company registers** through their respective endpoints.
+2. **Auth-Service** verifies login credentials.
+3. On success, a **JWT Token** is generated and sent back.
+4. Every request passes through **API Gateway**, where the token is validated.
+5. Access is granted or denied based on user role (`USER`, `COMPANY`).
 
 ---
 
 ## 🔄 Event-Driven Communication (Kafka)
 
-* **Producer:** Job-Service (on new job creation or status change).
-* **Consumer:** Notification-Service (listens and updates users/companies).
-* Enables **asynchronous communication** for scalable performance.
+* **Producer:** Job-Service (publishes job and application events).
+* **Consumer:** Notification-Service (listens and sends user notifications).
+* Enables **asynchronous and real-time** communication between services.
 
 ---
 
 ## 🧠 Key Features
 
 ✅ Microservices Architecture
-✅ JWT Authentication
+✅ Secure JWT Authentication
 ✅ Kafka-based Event Handling
 ✅ Centralized Configuration via Spring Cloud Config
-✅ Service Discovery via Eureka
-✅ API Gateway Routing
-✅ Role-Based Access (User & Company)
+✅ Service Discovery with Eureka
+✅ API Gateway Routing & Filtering
+✅ Role-Based Access Control (User/Company)
 ✅ Real-time Notifications
 
 ---
@@ -118,7 +171,7 @@ It supports **JWT-based Authentication** for secure access and **Spring Cloud Ga
 ## 📁 Project Structure
 
 ```
-Ahad-Job/
+Ahad-Job-Portal/
 │
 ├── api-gateway/
 ├── auth-service/
@@ -138,32 +191,30 @@ Ahad-Job/
 1. **Clone the project**
 
    ```bash
-   git clone https://github.com/harunsheikh42786/Ahad-Job.git
-   cd Ahad-Job
+   git clone https://github.com/harunsheikh42786/Ahad-Job-Portal.git
+   cd Ahad-Job-Portal
    ```
 
 2. **Run Config Server**
 
-   * Configure `application.yml` to point to your config repo:
-
-     ```yaml
-     spring.cloud.config.server.git.uri=https://github.com/harunsheikh42786/Ahad-Job-Configs.git
-     ```
+   ```yaml
+   spring.cloud.config.server.git.uri=https://github.com/harunsheikh42786/Ahad-Job-Configs.git
+   ```
 
 3. **Start Eureka Server**
 
-   * Run the Eureka application to register services dynamically.
+   * Run Eureka to register microservices dynamically.
 
-4. **Start Other Microservices**
+4. **Start Microservices**
 
-   * Run `User-Service`, `Company-Service`, `Job-Service`, `Notification-Service`, `Auth-Service`, and `API Gateway`.
+   * Run: `User-Service`, `Company-Service`, `Job-Service`, `Notification-Service`, `Auth-Service`, and `API Gateway`.
 
 5. **Kafka Setup**
 
-   * Ensure Kafka is installed and running locally or in Docker.
-   * Update Kafka configuration in each service’s `application.yml`.
+   * Install and run Kafka locally or via Docker.
+   * Update Kafka config in each service’s `application.yml`.
 
-6. **Access Application**
+6. **Access Points**
 
    * API Gateway: `http://localhost:8080`
    * Eureka Dashboard: `http://localhost:8761`
@@ -172,13 +223,13 @@ Ahad-Job/
 
 ## 🧪 Example Endpoints
 
-| Service              | Endpoint                     | Description              |
-| -------------------- | ---------------------------- | ------------------------ |
-| User-Service         | `/api/v1/users/register`     | Register a new user      |
-| Company-Service      | `/api/v1/companies/register` | Register a new company   |
-| Auth-Service         | `/api/v1/auth/login`         | Authenticate and get JWT |
-| Job-Service          | `/api/v1/jobs/create`        | Create a new job post    |
-| Notification-Service | `/api/v1/notifications`      | Get user notifications   |
+| Service              | Endpoint                   | Description            |
+| -------------------- | -------------------------- | ---------------------- |
+| User-Service         | `/api/v1/register/user`    | Register a new user    |
+| Company-Service      | `/api/v1/register/company` | Register a new company |
+| Auth-Service         | `/api/v1/auth/login`       | Login and generate JWT |
+| Job-Service          | `/api/v1/jobs/`            | Manage job listings    |
+| Notification-Service | `/api/v1/notifications/`   | Fetch notifications    |
 
 ---
 
@@ -192,10 +243,20 @@ Ahad-Job/
 ## 🧑‍🏫 Author
 
 **👤 Muhammed Harun Sheikh**
-🎓 Java & Full Stack Developer
+🎓 Java Developer
 💼 Specialized in Spring Boot, React, Microservices, and Cloud Deployment
 📫 [GitHub Profile](https://github.com/harunsheikh42786)
+📫 [LinkedIn Profile](https://www.linkedin.com/in/harun-sheikh-83974727a/)
 
 ---
 
-Would you like me to include **sample Postman requests** (for register, login, job creation, etc.) and a **diagram (architecture + flow)** for the README too? That would make it even more professional for GitHub.
+## 🏗️ Future Enhancements
+
+* 🧠 AI-powered job recommendations
+* 📬 Email notifications integration
+* ☁️ Deployment on AWS / Docker & Kubernetes
+* 📱 Frontend with React + Tailwind UI
+
+---
+
+Would you like me to also create a **Mermaid architecture diagram** (showing all microservices + Gateway + Kafka + Database flow) to add under the "Architecture" section of this README? It’ll make it visually professional for GitHub.
