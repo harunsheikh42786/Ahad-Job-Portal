@@ -1,4 +1,4 @@
-# 🧑‍💼 Ahad Job Portal
+# 🧑‍💼 Ahad Job Portal (API)
 
 A **microservices-based Job Portal Application** built with **Spring Boot**, providing a **secure**, **scalable**, and **event-driven architecture**.
 It connects **Users** and **Companies**, enabling job creation, applications, and real-time notifications — all managed through **Spring Cloud**, **Kafka**, and **JWT Authentication**.
