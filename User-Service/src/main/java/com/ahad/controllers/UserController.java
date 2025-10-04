@@ -57,6 +57,29 @@ public class UserController {
                 return ResponseEntity.status(status).body(apiResponse);
         }
 
+        @GetMapping("/exists")
+        public ResponseEntity<ApiResponse<Boolean>> checkUseByEmail(
+                        @RequestParam @Email String email) {
+
+                boolean isVerified = userService.existsByEmail(email);
+
+                HttpStatus status = isVerified ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+                String message = isVerified ? "User " + ResponseMessage.FETCHED
+                                : ResponseMessage.EMAIL_NOT_FOUND;
+
+                ApiResponse<Boolean> apiResponse = ApiResponse.<Boolean>builder()
+                                .success(isVerified)
+                                .message(message)
+                                .data(isVerified)
+                                .timestamp(LocalDateTime.now())
+                                .status(status.value())
+                                .errorCode(isVerified ? null : ResponseMessage.NOT_FOUND)
+                                .errorDetails(isVerified ? null : message)
+                                .build();
+
+                return ResponseEntity.status(status).body(apiResponse);
+        }
+
         // ✅ Get user by ID
         @GetMapping("/profile/{id}")
         public ResponseEntity<ApiResponse<UserProfileDTO>> getUserProfileById(@PathVariable UUID id) {
@@ -178,13 +201,16 @@ public class UserController {
                 List<UserForCompanyDTO> employers = userService.getAllUsersByCompanyId(companyId);
 
                 ApiResponse<List<UserForCompanyDTO>> apiResponse = ApiResponse.<List<UserForCompanyDTO>>builder()
-                                .success(true)
+                                .success(!employers.isEmpty())
                                 .data(employers)
                                 .status(HttpStatus.OK.value())
                                 .message("Employers " + (employers.isEmpty()
                                                 ? ResponseMessage.NOT_FOUND
                                                 : ResponseMessage.FETCHED))
                                 .timestamp(LocalDateTime.now())
+                                .errorCode(employers.isEmpty() ? "Employers list is empty"
+                                                : null)
+                                .errorDetails(employers.isEmpty() ? "Employers list is empty" : null)
                                 .build();
 
                 return ResponseEntity.ok(apiResponse);

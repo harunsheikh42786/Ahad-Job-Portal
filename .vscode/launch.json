@@ -1,0 +1,70 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "ApiGatewayApplication",
+            "request": "launch",
+            "mainClass": "com.ahad.ApiGatewayApplication",
+            "projectName": "Api-Gateway"
+        },
+        {
+            "type": "java",
+            "name": "AuthServiceApplication",
+            "request": "launch",
+            "mainClass": "com.ahad.AuthServiceApplication",
+            "projectName": "Auth-Service"
+        },
+        {
+            "type": "java",
+            "name": "CompanyServiceApplication",
+            "request": "launch",
+            "mainClass": "com.ahad.CompanyServiceApplication",
+            "projectName": "Company-Service"
+        },
+        {
+            "type": "java",
+            "name": "ConfigServerApplication",
+            "request": "launch",
+            "mainClass": "com.ahad.ConfigServerApplication",
+            "projectName": "Config-Server"
+        },
+        {
+            "type": "java",
+            "name": "EurekaServerApplication",
+            "request": "launch",
+            "mainClass": "com.ahad.EurekaServerApplication",
+            "projectName": "Eureka-Server"
+        },
+        {
+            "type": "java",
+            "name": "JobServiceApplication",
+            "request": "launch",
+            "mainClass": "com.ahad.JobServiceApplication",
+            "projectName": "Job-Service"
+        },
+        {
+            "type": "java",
+            "name": "NotificationServiceApplication",
+            "request": "launch",
+            "mainClass": "com.ahad.NotificationServiceApplication",
+            "projectName": "Notification-Service"
+        },
+        {
+            "type": "java",
+            "name": "UserServiceApplication",
+            "request": "launch",
+            "mainClass": "com.ahad.UserServiceApplication",
+            "projectName": "User-Service"
+        }
+    ]
+}

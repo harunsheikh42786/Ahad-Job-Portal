@@ -60,6 +60,29 @@ public class CompanyController {
                 return ResponseEntity.status(status).body(apiResponse);
         }
 
+        @GetMapping("/exists")
+        public ResponseEntity<ApiResponse<Boolean>> esistByEmail(
+                        @RequestParam @Email String email) {
+
+                boolean isVerified = companyService.existsByEmail(email);
+
+                HttpStatus status = isVerified ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+                String message = isVerified ? "Company " + ResponseMessage.SUCCESS_VERIFICATION
+                                : ResponseMessage.FAILED_VERIFICATION;
+
+                ApiResponse<Boolean> apiResponse = ApiResponse.<Boolean>builder()
+                                .success(isVerified)
+                                .message(message)
+                                .data(isVerified)
+                                .timestamp(LocalDateTime.now())
+                                .status(status.value())
+                                .errorCode(isVerified ? null : ResponseMessage.NOT_FOUND)
+                                .errorDetails(isVerified ? null : message)
+                                .build();
+
+                return ResponseEntity.status(status).body(apiResponse);
+        }
+
         @GetMapping("/{companyId}")
         public ResponseEntity<ApiResponse<CompanyProfileDTO>> getCompanyById(@PathVariable String companyId) {
                 CompanyProfileDTO companyProfileDTO = companyService.getCompanyById(companyId);

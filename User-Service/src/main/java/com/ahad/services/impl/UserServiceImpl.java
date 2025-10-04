@@ -53,6 +53,11 @@ public class UserServiceImpl implements UserService {
         private final PasswordEncoder passwordEncoder;
 
         @Override
+        public boolean existsByEmail(String username) {
+                return userRepository.existsByEmail(username);
+        }
+
+        @Override
         public boolean verifyUser(String username, String password) {
                 if (userRepository.existsByEmail(username)) {
                         User existingUser = userRepository.findByEmail(username); // ✅ Find by username/email

@@ -13,6 +13,8 @@ public interface CompanyService {
 
         boolean verifyCompany(String username, String password);
 
+        boolean existsByEmail(String username);
+
         // Create a new company
         CompanyResponseDTO createCompany(CompanyRequestDTO companyRequestDTO);
 

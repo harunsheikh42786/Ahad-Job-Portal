@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.ahad.dto.exports.CompanySearchDTO;
 import com.ahad.dto.imports.JobPostForCompanyDTO;
 import com.ahad.dto.imports.UserSearchForCompanyhDTO;
+import com.ahad.dto.profile.CompanyInformationProfileDTO;
 import com.ahad.dto.profile.CompanyProfileDTO;
 import com.ahad.dto.request.CompanyRequestDTO;
 import com.ahad.dto.response.CompanyResponseDTO;
@@ -31,9 +32,11 @@ import com.ahad.services.internal.CompanyService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
+@Slf4j
 @RequiredArgsConstructor
 public class CompanyServiceImpl implements CompanyService {
 
@@ -41,7 +44,7 @@ public class CompanyServiceImpl implements CompanyService {
         private final CompanyMapper companyMapper;
         private final UserService userService;
         private final JobService jobService;
-        private PasswordEncoder passwordEncoder;
+        private final PasswordEncoder passwordEncoder;
 
         // Register new Company
         @Override
@@ -51,6 +54,11 @@ public class CompanyServiceImpl implements CompanyService {
                         return passwordEncoder.matches(password, existingCompany.getPassword());
                 }
                 return false;
+        }
+
+        @Override
+        public boolean existsByEmail(String username) {
+                return companyRepository.existsByEmail(username);
         }
 
         @Override
@@ -71,6 +79,7 @@ public class CompanyServiceImpl implements CompanyService {
                                 .orElseThrow(() -> new MappingFailedException(ResponseMessage.MAPPING_FAILED));
 
                 // Save to DB
+                company.setPassword(passwordEncoder.encode(companyRequestDTO.getPassword()));
                 company.setOpen(true);
                 company.setTimeStamp(LocalDateTime.now());
 
@@ -81,7 +90,6 @@ public class CompanyServiceImpl implements CompanyService {
                                 .orElseThrow(() -> new MappingFailedException(ResponseMessage.MAPPING_FAILED));
         }
 
-        // Get Company By Id
         @Override
         public CompanyProfileDTO getCompanyById(String id) {
                 // 1️⃣ Fetch company entity
@@ -92,32 +100,42 @@ public class CompanyServiceImpl implements CompanyService {
                 // 2️⃣ Map to DTO
                 CompanyProfileDTO companyProfileDTO = companyMapper.mapToProfileDTO(fetchedCompany);
 
-                // Try to fetch users
-                try {
-                        ApiResponse<List<UserSearchForCompanyhDTO>> apiResponse = userService
-                                        .getUsersByCompanyId(UUID.fromString(id));
-                        if (apiResponse.isSuccess()) {
-                                companyProfileDTO.getCompanyInformationDTO().setEmployers(apiResponse.getData());
-                        } else {
+                // 3️⃣ Ensure CompanyInformationDTO exists
+                if (companyProfileDTO.getCompanyInformationDTO() != null) {
+
+                        // 4️⃣ Fetch users with improved null checks
+                        try {
+                                ApiResponse<List<UserSearchForCompanyhDTO>> userApiResponse = userService
+                                                .getUsersByCompanyId(UUID.fromString(id));
+                                if (userApiResponse != null && userApiResponse.isSuccess()
+                                                && userApiResponse.getData() != null) {
+                                        companyProfileDTO.getCompanyInformationDTO()
+                                                        .setEmployers(userApiResponse.getData());
+                                } else {
+                                        companyProfileDTO.getCompanyInformationDTO()
+                                                        .setEmployers(Collections.emptyList());
+                                }
+                        } catch (Exception e) {
+                                log.warn("Failed to fetch users for company {}: {}", id, e.getMessage());
                                 companyProfileDTO.getCompanyInformationDTO().setEmployers(Collections.emptyList());
                         }
-                } catch (Exception e) {
-                        // Agar UserService down hai
-                        companyProfileDTO.getCompanyInformationDTO().setEmployers(Collections.emptyList());
-                }
 
-                // Try to fetch jobs
-                try {
-                        ApiResponse<List<JobPostForCompanyDTO>> jobApiResponse = jobService
-                                        .getJobsByCompanyId(UUID.fromString(id));
-                        if (jobApiResponse.isSuccess()) {
-                                companyProfileDTO.getCompanyInformationDTO().setJobPosts(jobApiResponse.getData());
-                        } else {
+                        // 5️⃣ Fetch jobs with improved null checks
+                        try {
+                                ApiResponse<List<JobPostForCompanyDTO>> jobApiResponse = jobService
+                                                .getJobsByCompanyId(UUID.fromString(id));
+                                if (jobApiResponse != null && jobApiResponse.isSuccess()
+                                                && jobApiResponse.getData() != null) {
+                                        companyProfileDTO.getCompanyInformationDTO()
+                                                        .setJobPosts(jobApiResponse.getData());
+                                } else {
+                                        companyProfileDTO.getCompanyInformationDTO()
+                                                        .setJobPosts(Collections.emptyList());
+                                }
+                        } catch (Exception e) {
+                                log.warn("Failed to fetch jobs for company {}: {}", id, e.getMessage());
                                 companyProfileDTO.getCompanyInformationDTO().setJobPosts(Collections.emptyList());
                         }
-                } catch (Exception e) {
-                        // Agar JobService down hai
-                        companyProfileDTO.getCompanyInformationDTO().setJobPosts(Collections.emptyList());
                 }
 
                 return companyProfileDTO;
@@ -129,6 +147,10 @@ public class CompanyServiceImpl implements CompanyService {
                                                 ResponseMessage.ID_NOT_FOUND + companyId.toString()));
 
                 companyMapper.toEntity(dto, existingCompany);
+
+                if (!dto.getPassword().isEmpty()) {
+                        existingCompany.setPassword(passwordEncoder.encode(dto.getPassword()));
+                }
 
                 // TODO: apply updates from dto → existingCompany if required
                 Company savedCompany = companyRepository.save(existingCompany);

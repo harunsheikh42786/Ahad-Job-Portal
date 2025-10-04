@@ -16,6 +16,8 @@ import com.ahad.enums.UserRole;
 
 public interface UserService {
 
+        boolean existsByEmail(String username);
+
         boolean verifyUser(String username, String password);
 
         // Create a new user
