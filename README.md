@@ -1,8 +1,3 @@
-Perfect ✅ Harun!
-Here’s your **fully updated, professional GitHub-ready README** for **Ahad Job Portal**, including your new **API Gateway configuration**, concise explanations, and clear structure — all formatted for maximum clarity and recruiter appeal 👇
-
----
-
 # 🧑‍💼 Ahad Job Portal
 
 A **microservices-based Job Portal Application** built with **Spring Boot**, providing a **secure**, **scalable**, and **event-driven architecture**.
